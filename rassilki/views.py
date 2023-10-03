@@ -14,11 +14,13 @@ class HomePageView(ListView):
 class ClientCreateView(CreateView):
   model = Client
   form_class = ClientForm
+  success_url = reverse_lazy('rassilki:home')
 
 class MailingCreateView(CreateView):
     model = MailingMessage
     template_name = 'rassilki/create_mailing.html'
     form_class = MailingMessageForm
+    success_url = reverse_lazy('rassilki:home')
 
 
 
