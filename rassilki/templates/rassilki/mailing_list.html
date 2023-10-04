@@ -1,0 +1,81 @@
+{% extends 'rassilki/home.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <a class="btn btn-primary create-campaign-button" href="{% url 'rassilki:mailing-create' %}">Create
+                Campaign</a>
+        </div>
+    </div>
+    <div class="row mt-4">
+        {% for object in object_list %}
+        <div class="col-4">
+            <div class="card mb-3 custom-card">
+                <div class="card-body">
+                    <h4 class="card-title">{{ object.mail_subject }}</h4>
+                    <hr class="divider">
+                    {% if object.period == 1%}
+                    <p class="card-text"><strong>Periodicity:</strong> Daily</p>
+                    {% elif object.period == 2%}
+                    <p class="card-text"><strong>Periodicity:</strong> Weekly</p>
+                    {% elif object.period == 3%}
+                    <p class="card-text"><strong>Periodicity:</strong> Monthly</p>
+                    {% endif %}
+                    <p class="card-text"><strong>Send Time:</strong> {{ object.send_time }}</p>
+                    <p class="card-text"><strong>Owner:</strong> {{ object.mail_owner }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a class="btn btn-outline-primary btn-sm"
+                               href="{% url 'rassilki:mailing-detail' object.pk %}">Details</a>
+                        </div>
+                        {% if object.mail_status == 1 %}
+                        <small class="text-secondary">Finished</small>
+                        {% elif object.mail_status == 2 %}
+                        <small class="text-success">Created</small>
+                        {% elif object.mail_status == 3 %}
+                        <small class="text-danger">Running</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<style>
+    .card-container {
+        display: flex;
+        justify-content: space-between; /* Adjust as needed */
+    }
+
+    .card {
+        width: 100%;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s; /* Add transition for the hover effect */
+    }
+
+    /* Apply the hover effect */
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        margin-bottom: 10px;
+    }
+
+    .card-text {
+        font-size: 0.875rem;
+        margin-bottom: 5px;
+    }
+
+    .btn-group {
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
