@@ -1,7 +1,7 @@
+import logging
 import os
 
 import django
-
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
@@ -22,18 +22,26 @@ class MailingTask(Task):
     max_retries = 3
     ignore_result = True
 
-
+@app.task
 def send_mails() -> None:
     """Send email to clients"""
+    logging.info('функция стартовала')
     now = timezone.now()
-    ready_to_mail_list = MailingMessage.objects.filter(next_time_run__le=now)
+
+    ready_to_mail_list = MailingMessage.objects.filter(send_time=now)
+    count = len(ready_to_mail_list)
+
+    if count > 0:
+        print(f"Есть {count} объектов для отправки.")
+    else:
+        print("Нет объектов для отправки.")
 
     for mailing in ready_to_mail_list:
-        _send_one_message.delay(mailing.pk)
+        send_one_message.delay(mailing.pk)
 
 
-@app.task(base=MailingTask)
-def _send_one_message(mailing_pk: int) -> None:
+
+def send_one_message(mailing_pk: int) -> None:
     mailing: MailingMessage = MailingMessage.objects.get(pk=mailing_pk)
     recipient_email: list[str] = [client.email for client in mailing.client.all()]
 
@@ -71,3 +79,15 @@ def _send_one_message(mailing_pk: int) -> None:
         Log.objects.bulk_create(logs)
 
         raise
+
+send_mails()
+
+# Получить все объекты MailingMessage
+all_mailings = MailingMessage.objects.all()
+
+# Вывести send_time для каждого объекта
+for mailing in all_mailings:
+    print(f"send_time для объекта {mailing.pk}: {mailing.send_time}")
+
+
+

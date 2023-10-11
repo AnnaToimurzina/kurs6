@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from django.core.mail import send_mail
 from django.db import models
 from django.utils import timezone
 
@@ -18,13 +19,6 @@ class Client(models.Model):
         verbose_name = 'Клиент'
         verbose_name_plural = 'Клиенты'
 
-class MailingStatus(models.IntegerChoices):
-    FINISHED = 1, 'Finished'
-    CREATED = 2, 'Created'
-    RUNS = 3, 'Runs'
-
-    def __str__(self) -> str:
-        return self.label
 
 
 # Модель рассылки
@@ -36,40 +30,75 @@ class MailingMessage(models.Model):
         ('weekly', 'Раз в неделю'),
         ('monthly', 'Раз в месяц'),
     )
+    FIRST_CHOICES = (
+        ('1', 'закончить'),
+        ('2', 'сохранить'),
+        ('3', 'запустить'),
+    )
 
     send_time = models.TimeField(verbose_name='Send time', )
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, default='daily')
-    status = models.CharField(choices=MailingStatus.choices, verbose_name='Status',
-                                           default=MailingStatus.CREATED)
+    status = models.CharField(choices=FIRST_CHOICES, verbose_name='Status',
+                                           default='3')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return f"{self.body}"
 
-    def get_next_time_run(self) -> datetime:
-        """Return next time run"""
-        now = timezone.now()
-        if self.send_time >= now.time():
-            # Если время отправки больше или равно текущему времени сейчас, отправляем сегодня
-            next_datetime = now.today()
-        else:
-            # Иначе отправляем завтра
-            next_datetime = now.today() + timedelta(days=1)
+    # def get_next_time_run(self) -> datetime:
+    #     """Return next time run"""
+    #     now = timezone.now()
+    #     if self.send_time >= now.time():
+    #         # Если время отправки больше или равно текущему времени сейчас, отправляем сегодня
+    #         next_datetime = now.today()
+    #     else:
+    #         # Иначе отправляем завтра
+    #         next_datetime = now.today() + timedelta(days=1)
+    #
+    #         # Далее добавляем интервал в зависимости от выбранной периодичности
+    #         if self.frequency == 'daily':
+    #             pass  # Оставляем без изменений, так как уже учтено в вычислениях выше
+    #         elif self.frequency == 'weekly':
+    #             next_datetime += timedelta(weeks=1)
+    #         elif self.frequency == 'monthly':
+    #             next_datetime += timedelta(days=30)  # Простое добавление дней
+    #
+    #         # Объединяем полученное дату и время отправки, чтобы получить полное время отправки
+    #         next_time_run = datetime.combine(next_datetime, self.send_time)
+    #
+    #         return next_time_run
 
-            # Далее добавляем интервал в зависимости от выбранной периодичности
-            if self.frequency == 'daily':
-                pass  # Оставляем без изменений, так как уже учтено в вычислениях выше
-            elif self.frequency == 'weekly':
-                next_datetime += timedelta(weeks=1)
-            elif self.frequency == 'monthly':
-                next_datetime += timedelta(days=30)  # Простое добавление дней
-
-            # Объединяем полученное дату и время отправки, чтобы получить полное время отправки
-            next_time_run = datetime.combine(next_datetime, self.send_time)
-
-            return next_time_run
-
-
+    # def send_email(self):
+    #     subject = self.subject
+    #     message = self.body
+    #     from_email = "2402as@gmail.com"
+    #     recipient_list = [self.client.email]
+    #
+    #     try:
+    #         send_mail(subject, message, from_email, recipient_list)
+    #
+    #         # лог записи об успешной отправке
+    #         Log.objects.create(
+    #             log_status=Log.STATUS_SUCCESSFUL,
+    #             log_client=self.client,
+    #             log_mailing=self,
+    #             log_server_response="Письмо успешно отправлено",
+    #         )
+    #
+    #         return True  # Письмо успешно отправлено
+    #     except Exception as e:
+    #         print(f"Ошибка при отправке письма: {str(e)}")
+    #
+    #         # лог записи об ошибке отправки
+    #         Log.objects.create(
+    #             log_status=Log.STATUS_FAILED,
+    #             log_client=self.client,
+    #             log_mailing=self,
+    #             log_server_response=f"Ошибка отправки письма: {str(e)}",
+    #         )
+    #
+    #         return False  # Письмо не удалось отправить
+    #
     class Meta:
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
