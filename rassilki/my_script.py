@@ -1,6 +1,5 @@
 import logging
 import os
-import smtplib
 
 import django
 
@@ -23,13 +22,13 @@ class MailingTask(Task):
     max_retries = 3
     ignore_result = True
 
-@app.task
+
 def send_mails() -> None:
     """Send email to clients"""
     logging.info('функция стартовала')
     now = timezone.now()
 
-    ready_to_mail_list = MailingMessage.objects.filter(send_time='13:05')
+    ready_to_mail_list = MailingMessage.objects.filter(send_time='15:15')
     count = len(ready_to_mail_list)
 
     if count > 0:
@@ -38,14 +37,14 @@ def send_mails() -> None:
         print("Нет объектов для отправки.")
 
     for mailing in ready_to_mail_list:
-        send_one_message.delay(mailing.pk)
+        send_one_message.apply_async(args=(mailing.pk,), countdown=0)
 
 
 
-@app.task
+
 def send_one_message(mailing_pk: int) -> None:
-    mailing= MailingMessage.objects.get(pk=mailing_pk)
-    recipient_email = [mailing.client.email]
+    mailing: MailingMessage = MailingMessage.objects.get(pk=mailing_pk)
+    recipient_email: list[str] = [client.email for client in mailing.client.all()]
 
     try:
         if recipient_email:
@@ -56,7 +55,6 @@ def send_one_message(mailing_pk: int) -> None:
                 recipient_email,
                 fail_silently=False,
             )
-
             logs = []
             for client in mailing.client.all():
 
@@ -81,15 +79,10 @@ def send_one_message(mailing_pk: int) -> None:
             logs.append(log)
         Log.objects.bulk_create(logs)
 
-    except smtplib.SMTPException as e:
-        print("e", e, e.strerror)  # САМОЕ ИНТЕРЕСНОЕ ДЛЯ ТЕБЯ ВОТ ТУТ
-        log.status = log.ERROR
-        log.response = e
-
         raise
+    print(f"Отправка сообщения для Mailing PK {mailing_pk}")
 
 send_mails()
-
 
 
 # Получить все объекты MailingMessage
@@ -98,6 +91,4 @@ all_mailings = MailingMessage.objects.all()
 # Вывести send_time для каждого объекта
 for mailing in all_mailings:
     print(f"send_time для объекта {mailing.pk}: {mailing.send_time}")
-
-
 
