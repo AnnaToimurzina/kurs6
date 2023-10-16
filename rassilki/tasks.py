@@ -1,5 +1,8 @@
 import logging
 import os
+import smtplib
+from email.mime.text import MIMEText
+
 import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
@@ -44,14 +47,14 @@ def send_mails() -> None:
     for mailing_info in all_mailings:
         print(f"send_time для объекта {mailing_info.pk}: {mailing_info.send_time}")
 
-    for mailing in all_mailings:
-        send_one_message(mailing.pk)
+    for mailing in ready_to_mail_list:
+        send_one_message(mailing)
 
 
 
-def send_one_message(mailing_pk):
-    mailing = MailingMessage.objects.get(pk=mailing_pk)
-    recipient_email = [mailing.client.email]
+def send_one_message(mailing):
+
+    recipient_email = mailing.client.email
 
     try:
         if recipient_email:
@@ -59,25 +62,25 @@ def send_one_message(mailing_pk):
                 mailing.subject,
                 mailing.body,
                 settings.EMAIL_HOST_USER,
-                recipient_email,
+                [recipient_email],
                 settings.EMAIL_HOST,
                 settings.EMAIL_PORT,
                 settings.EMAIL_HOST_PASSWORD,
 
             )
 
-            logs = []
-            for client in mailing.client.all():
-                log = Log(
+
+
+            log = Log(
                     log_status=Log.STATUS_SUCCESSFUL,
-                    log_client=client,
+                    log_client=mailing.client,
                     log_mailing=mailing,
                     log_server_response='Email Sent Successfully!',
                 )
-                logs.append(log)
-            Log.objects.bulk_create(logs)
+            log.save()
+
+            print(f"Рассылка с темой '{mailing.subject}' была успешно отправлена.")
     except Exception as e:
-        # Обработка ошибки отправки письма, например, запись ошибки в логи
         print(f"Ошибка отправки письма: {str(e)}")
 
 send_mails()
