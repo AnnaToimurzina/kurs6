@@ -1,12 +1,6 @@
 import logging
 import os
-import smtplib
-from email.mime.text import MIMEText
-
 import django
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-django.setup()
 
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -17,6 +11,9 @@ from config.celery import app
 from celery import Task
 
 from rassilki.models import MailingMessage, Log
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+django.setup()
 
 
 class MailingTask(Task):
@@ -30,7 +27,7 @@ def send_mails() -> None:
     logging.info('функция стартовала')
     now = timezone.now()
 
-    ready_to_mail_list = MailingMessage.objects.filter(send_time='01:45')
+    ready_to_mail_list = MailingMessage.objects.filter(send_time__lte=now)
     count = len(ready_to_mail_list)
 
     if count > 0:
@@ -39,48 +36,56 @@ def send_mails() -> None:
     else:
         print("Нет объектов для отправки.")
 
-
     # Получить все объекты MailingMessage
     all_mailings = MailingMessage.objects.all()
 
     # Вывести send_time для каждого объекта
     for mailing_info in all_mailings:
-        print(f"send_time для объекта {mailing_info.pk}: {mailing_info.send_time}")
+        print(f"send_time для объекта {mailing_info.pk}: {mailing_info.send_time} {mailing_info.client}")
 
     for mailing in ready_to_mail_list:
-        send_one_message(mailing)
+        send_one_message.delay(mailing.pk)
 
 
-
-def send_one_message(mailing):
-
-    recipient_email = mailing.client.email
-
+@app.task(base=MailingTask)
+def send_one_message(mailing_pk: int) -> None:
+    mailing: MailingMessage = MailingMessage.objects.get(pk=mailing_pk)
+    recipient_email: list[str] = [client.email for client in mailing.client.all()]
+    print(recipient_email, mailing.subject, mailing.body)
     try:
         if recipient_email:
             send_mail(
                 mailing.subject,
                 mailing.body,
                 settings.EMAIL_HOST_USER,
-                [recipient_email],
-                settings.EMAIL_HOST,
-                settings.EMAIL_PORT,
-                settings.EMAIL_HOST_PASSWORD,
-
+                recipient_email,
+                fail_silently=False,
             )
+            print(f"Рассылка с темой '{mailing.subject}' была успешно отправлена.")
 
-
-
-            log = Log(
+            logs = []
+            for client in mailing.client.all():
+                log = Log(
                     log_status=Log.STATUS_SUCCESSFUL,
-                    log_client=mailing.client,
+                    log_client=client,
                     log_mailing=mailing,
                     log_server_response='Email Sent Successfully!',
                 )
-            log.save()
+                logs.append(log)
+            Log.objects.bulk_create(logs)
 
-            print(f"Рассылка с темой '{mailing.subject}' была успешно отправлена.")
-    except Exception as e:
-        print(f"Ошибка отправки письма: {str(e)}")
+    except SMTPException as err:
+        logs = []
+        for client in mailing.client.all():
+            log = Log(
+                log_status=Log.STATUS_FAILED,
+                log_client=client,
+                log_mailing=mailing,
+                log_server_response=err,
+            )
+            logs.append(log)
+        Log.objects.bulk_create(logs)
+        print(f"Ошибка отправки письма: {str(err)}")
+        raise
 
-send_mails()
+

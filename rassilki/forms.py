@@ -8,10 +8,7 @@ class ClientForm(forms.ModelForm):
         fields = ['email', 'full_name', 'comment']
 
 
-
 class MailingMessageForm(forms.ModelForm):
     class Meta:
         model = MailingMessage
         fields = ['subject', 'body', 'send_time', 'frequency', 'status', 'client']
-
-

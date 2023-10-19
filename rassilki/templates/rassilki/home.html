@@ -1,78 +1,133 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title> Главная страница </title>
-    <style>
-        h1 {text-align: center;}
-        footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #f8f9fa; /* Цвет фона футера */
-            text-align: left; /* Выравнивание текста слева */
-        }
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="author">
 
-        .footer-content {
-            padding: 10px; /* Отступы внутри футера */
-            margin-left: 20px; /* Отступ слева для контента футера */}
-    </style>
+    <title>{{ title }}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/product.css' %}" rel="stylesheet">
 </head>
+
 <body>
-<h1> <!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-</head>
-<body>
-<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-    <h5 class="my-0 mr-md-auto font-weight-normal"></h5>
-    <nav class="ms-5">
-        <a class="p-2 btn btn-outline-primary" href="{% url 'rassilki:create' %}">Клиент сервиса</a>
-        <a class="p-2 btn btn-outline-primary" href="{% url 'rassilki:create_mailing' %}">Рассылка</a>
-    </nav>
-</div>
 
-<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-    <h1 class="display-4">Skybot</h1>
-    <p class="lead"> Волшебство Рассылок: Ключ к Успеху в Бизнесе и Маркетинге<br><br>
+<nav class="site-header sticky-top py-1">
+    <div class="container d-flex flex-column flex-md-row justify-content-between">
+        <a class="py-2" href="{% url 'rassilki:index' %}">
+            <svg class="d-block mx-auto" fill="none" height="24" stroke="currentColor" stroke-linecap="round"
+                 stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"
+                 xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="14.31" x2="20.05" y1="8" y2="17.94"></line>
+                <line x1="9.69" x2="21.17" y1="8" y2="8"></line>
+                <line x1="7.38" x2="13.12" y1="12" y2="2.06"></line>
+                <line x1="9.69" x2="3.95" y1="16" y2="6.06"></line>
+                <line x1="14.31" x2="2.83" y1="16" y2="16"></line>
+                <line x1="16.62" x2="10.88" y1="12" y2="21.94"></line>
+            </svg>
+        </a>
 
-Сервисы рассылок - это магия, которая превращает бизнес в процветающее предприятие и делает маркетинг эффективным. Они привлекают клиентов, поддерживают продажи, укрепляют бренд, вызывают ожидание и внимание, предоставляют возможность оптимизации и персонализации. Важно помнить, что магия рассылок требует аккуратного обращения. Правильное использование этого инструмента приносит волшебные результаты в бизнесе и маркетинге.</p>
-
-    <div class="d-flex flex-row justify-content-between p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-    <div class="left-content">
-        <ul class="list-unstyled text-small">
-            <li><a class="text-muted" href="/otsivi/">Отзывы</a></li>
-        </ul>
+        <a class="py-2 d-none d-md-inline-block" href="{% url 'rassilki:index' %}">Home</a>
+        <a class="py-2 d-none d-md-inline-block" href="{% url 'rassilki:mailing-list' %}">Campaign</a>
+        <a class="py-2 d-none d-md-inline-block" href="{% url 'rassilki:client-list' %}">Clients</a>
+        <a class="py-2 d-none d-md-inline-block" href="{% url 'rassilki:contacts' %}">Contacts</a>
     </div>
-    <div class="right-content">
-        <ul class="list-unstyled text-small">
-            <li><a class="text-muted" href="{% url 'rassilki:contacts' %}">Контакты</a></li>
-        </ul>
-    </div>
-</div>
+</nav>
 
-    <footer class="pt-4 my-md-5 pt-md-5 border-top">
-    <div class="container">
-        <div class="row">
-            <div class="col-12 col-md">
-                Skybot
-                <small class="d-block mb-3 text-muted">&copy; 2023</small>
+<main role="main">
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">{{ title }}</h1>
+            <p class="lead text-muted">{{ description }}</p>
+            <p>
+            </p>
+        </div>
+
+        <!-- Campaign content -->
+        <div class="album py-5">
+            <div class="container">
+                <div class="row">
+                    <!-- Mailing content -->
+                    {% block content %}
+                    {% endblock %}
+                </div>
             </div>
         </div>
-    </div>
-
+    </section>
+    <footer>
+        <footer class="container py-5">
+    <div class="row">
+        <div class="col-12 col-md">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="d-block mb-2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="14.31" y1="8" x2="20.05" y2="17.94"></line>
+                <line x1="9.69" y1="8" x2="21.17" y2="8"></line>
+                <line x1="7.38" y1="12" x2="13.12" y2="2.06"></line>
+                <line x1="9.69" y1="16" x2="3.95" y2="6.06"></line>
+                <line x1="14.31" y1="16" x2="2.83" y2="16"></line>
+                <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
+            </svg>
+            <small class="d-block mb-3 text-muted">© 2017-2018</small>
+        </div>
+        <div class="col-6 col-md">
+            <h5>Features</h5>
+            <ul class="list-unstyled text-small">
+                <li><a class="text-muted" href="#">Cool stuff</a></li>
+                <li><a class="text-muted" href="#">Random feature</a></li>
+                <li><a class="text-muted" href="#">Team feature</a></li>
+                <li><a class="text-muted" href="#">Stuff for developers</a></li>
+                <li><a class="text-muted" href="#">Another one</a></li>
+                <li><a class="text-muted" href="#">Last time</a></li>
+            </ul>
+        </div>
+        <div class="col-6 col-md">
+            <h5>Resources</h5>
+            <ul class="list-unstyled text-small">
+                <li><a class="text-muted" href="#">Resource</a></li>
+                <li><a class="text-muted" href="#">Resource name</a></li>
+                <li><a class="text-muted" href="#">Another resource</a></li>
+                <li><a class="text-muted" href="#">Final resource</a></li>
+            </ul>
+        </div>
+        <div class="col-6 col-md">
+            <h5>Resources</h5>
+            <ul class="list-unstyled text-small">
+                <li><a class="text-muted" href="#">Business</a></li>
+                <li><a class="text-muted" href="#">Education</a></li>
+                <li><a class="text-muted" href="#">Government</a></li>
+                <li><a class="text-muted" href="#">Gaming</a></li>
+            </ul>
+        </div>
+        <div class="col-6 col-md">
+            <h5>About</h5>
+            <ul class="list-unstyled text-small">
+                <li><a class="text-muted" href="#">Team</a></li>
+                <li><a class="text-muted" href="#">Locations</a></li>
+                <li><a class="text-muted" href="#">Privacy</a></li>
+                <li><a class="text-muted" href="#">Terms</a></li>
+            </ul>
+        </div>
     </div>
 </footer>
+    </footer>
+</main>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script crossorigin="anonymous"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/holder.min.js' %}"></script>
 
-</div>
-
-<script src="/static/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> </h1>
-</h1>
-<br>
-<form method="post">
-    {% csrf_token %}
 </html>

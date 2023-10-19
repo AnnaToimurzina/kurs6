@@ -1,18 +1,36 @@
 {% extends 'rassilki/home.html' %}
 
 {% block content %}
+<style>
+    .card {
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-  <div class="row">
-        <div class="col-md-4">
-            <div class="card mb-4 no-hover">
-                <div class="card-body">
-                    <h4 class="card-title">Контактная информация</h4>
-                    <p class="card-text">
-                        <strong>Moscow:</strong> +7 000 000 000 00<br>
-                        <strong>St. Petersburg:</strong> +7 800 000 000 00
-                    </p>
-                </div>
+    .card-title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .card-text {
+        font-size: 16px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4 no-hover">
+            <div class="card-body">
+                <h4 class="card-title">Контактная информация</h4>
+                <p class="card-text">
+                    <strong>Moscow:</strong> +7 000 000 000 00<br>
+                    <strong>St. Petersburg:</strong> +7 800 000 000 00
+                </p>
             </div>
         </div>
+    </div>
+</div>
 
 {% endblock %}

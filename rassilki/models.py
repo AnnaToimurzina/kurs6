@@ -6,11 +6,12 @@ from django.utils import timezone
 
 NULLABLE = {'null': True, 'blank': True}
 
+
 # Модель Клиент сервиса
 class Client(models.Model):
-    email = models.EmailField(unique=True)
-    full_name = models.CharField(max_length=255)
-    comment = models.TextField(blank=True, null=True)
+    email = models.EmailField(unique=True, verbose_name='Email')
+    full_name = models.CharField(max_length=255, verbose_name='Full name', **NULLABLE)
+    comment = models.TextField(blank=True, null=True, verbose_name='Comment')
 
     def __str__(self):
         return self.email
@@ -20,11 +21,8 @@ class Client(models.Model):
         verbose_name_plural = 'Клиенты'
 
 
-
 # Модель рассылки
 class MailingMessage(models.Model):
-    subject = models.CharField(max_length=255)
-    body = models.TextField(max_length=255)
     FREQUENCY_CHOICES = (
         ('daily', 'Раз в день'),
         ('weekly', 'Раз в неделю'),
@@ -36,11 +34,13 @@ class MailingMessage(models.Model):
         ('3', 'запустить'),
     )
 
+    subject = models.CharField(max_length=255)
+    body = models.TextField(max_length=255)
     send_time = models.TimeField(verbose_name='Send time', )
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, default='daily')
     status = models.CharField(choices=FIRST_CHOICES, verbose_name='Status',
-                                           default='3')
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, default=1)
+                              default='3')
+    client = models.ManyToManyField(Client, verbose_name='Clients')
 
     def __str__(self):
         return f"{self.body}"
@@ -66,39 +66,7 @@ class MailingMessage(models.Model):
     #         # Объединяем полученное дату и время отправки, чтобы получить полное время отправки
     #         next_time_run = datetime.combine(next_datetime, self.send_time)
     #
-    #         return next_time_run
 
-    # def send_email(self):
-    #     subject = self.subject
-    #     message = self.body
-    #     from_email = "2402as@gmail.com"
-    #     recipient_list = [self.client.email]
-    #
-    #     try:
-    #         send_mail(subject, message, from_email, recipient_list)
-    #
-    #         # лог записи об успешной отправке
-    #         Log.objects.create(
-    #             log_status=Log.STATUS_SUCCESSFUL,
-    #             log_client=self.client,
-    #             log_mailing=self,
-    #             log_server_response="Письмо успешно отправлено",
-    #         )
-    #
-    #         return True  # Письмо успешно отправлено
-    #     except Exception as e:
-    #         print(f"Ошибка при отправке письма: {str(e)}")
-    #
-    #         # лог записи об ошибке отправки
-    #         Log.objects.create(
-    #             log_status=Log.STATUS_FAILED,
-    #             log_client=self.client,
-    #             log_mailing=self,
-    #             log_server_response=f"Ошибка отправки письма: {str(e)}",
-    #         )
-    #
-    #         return False  # Письмо не удалось отправить
-    #
     class Meta:
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
@@ -110,9 +78,9 @@ class Log(models.Model):
     STATUS_FAILED = 'FAILED'
 
     STATUS_CHOICES = (
-            (STATUS_SUCCESSFUL, 'Success'),
-            (STATUS_FAILED, 'Failed'),
-        )
+        (STATUS_SUCCESSFUL, 'Success'),
+        (STATUS_FAILED, 'Failed'),
+    )
 
     log_created_at = models.DateTimeField(auto_now_add=True, verbose_name='Creation Time', **NULLABLE, )
     log_status = models.CharField(max_length=50, choices=STATUS_CHOICES, verbose_name='Status', **NULLABLE)
@@ -126,5 +94,3 @@ class Log(models.Model):
     class Meta:
         verbose_name = 'Log'
         verbose_name_plural = 'Logs'
-
-

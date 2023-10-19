@@ -21,5 +21,6 @@ from rassilki.views import HomePageView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('rassilki.urls', namespace='rassilki'))
+    path('', include('rassilki.urls', namespace='rassilki')),
+    path('users/', include('users.urls', namespace='users')),
 ]

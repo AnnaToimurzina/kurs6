@@ -56,43 +56,41 @@
 
 <table class="email-table">
     <thead>
-        <tr>
-            <th>Email Subject</th>
-            <th>Message</th>
-            <th>Time</th>
-            <th>Periodicity</th>
-            <th>Status</th>
-            <th>Subscribers</th>
-            <th>Owner</th>
-        </tr>
+    <tr>
+        <th>Email Subject</th>
+        <th>Message</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Subscribers</th>
+
+    </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>{{ object.mail_subject }}</td>
-            <td>{{ object.body }}</td>
-            <td>{{ object.send_time }}</td>
-            {% if object.period == 1 %}
-            <td>Daily</td>
-            {% elif object.period == 2 %}
-            <td>Weekly</td>
-            {% else %}
-            <td>Monthly</td>
-            {% endif %}
-            <td>{{ object.get_mail_status_display }}</td>
-            <td>
-                <ul class="subscribers-list">
-                    {% for client in object.mail_clients.all %}
-                        <li>{{ client.email }}</li>
-                    {% endfor %}
-                </ul>
-            </td>
-            <td>{{ object.mail_owner }}</td>
-        </tr>
+    <tr>
+        <td>{{ object.subject }}</td>
+        <td>{{ object.body }}</td>
+        <td>{{ object.send_time }}</td>
+        {% if object.status == 1 %}
+        <td>закончить</td>
+        {% elif object.status == 2 %}
+        <td>сохранить</td>
+        {% elif object.status == 3 %}
+        <td>запустить</td>
+        {% endif %}
+         <td>{{ object.get_status_display }}</td>
+        <td>
+            <ul class="subscribers-list">
+                {% for client in object.client.all %}
+                <li>{{ client.email }}</li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
     </tbody>
 </table>
 <div class="button-container">
-    <a href="{% url 'email_campaign:campaign-delete' object.pk %}">Delete</a>
-    <a href="{% url 'email_campaign:campaign-update' object.pk %}">Edit</a>
-    <a href="{% url 'email_campaign:campaign-list' %}">Back to Campaign</a>
+    <a href="{% url 'rassilki:mailing-delete' object.pk %}">Delete</a>
+    <a href="{% url 'rassilki:mailing-update' object.pk %}">Edit</a>
+    <a href="{% url 'rassilki:mailing-list' %}">Back to Campaign</a>
 </div>
 {% endblock %}
