@@ -79,11 +79,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'kursovaia_django',
         'USER': 'postgres',  # Пользователь для подключения
-        'PASSWORD': 'luka',  # Пароль для этого пользователя
+        'PASSWORD': 'Stepa123',  # Пароль для этого пользователя
         'HOST': 'localhost',  # Адрес, на котором развернут сервер БД
         'PORT': '5432'
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -108,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'Asia/Yekaterinburg'
 
 USE_I18N = True
 
@@ -128,17 +129,12 @@ STATICFILES_DIRS = (
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# EMAIL_HOST = 'smtp.yandex.ru'
-# EMAIL_PORT = 465
-# EMAIL_USE_SSL = True
-# EMAIL_HOST_USER = 'toimurzinaanna@yandex.ru'
-# EMAIL_HOST_PASSWORD = 'vhjyegdcfykijfaa'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'test.lukich@gmail.com'
-EMAIL_HOST_PASSWORD = 'yahfbbrpefvqjuis' # ' bueiqyuurtgshcip' #yandex
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'toimurzinaanna@yandex.ru'
+EMAIL_HOST_PASSWORD = 'vhjyegdcfykijfaa'
 EMAIL_USE_TLS = True
 
 
