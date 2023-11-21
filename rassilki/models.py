@@ -1,8 +1,5 @@
-from datetime import datetime, timedelta
-
-from django.core.mail import send_mail
 from django.db import models
-from django.utils import timezone
+
 
 NULLABLE = {'null': True, 'blank': True}
 
@@ -34,38 +31,24 @@ class MailingMessage(models.Model):
         ('3', 'запустить'),
     )
 
+    ADDITIONAL_STATUS_CHOICES = (
+        ('pending', 'Ожидает'),
+        ('processing', 'В процессе'),
+        ('completed', 'Завершено'),
+        ('failed', 'Не удалось'),
+    )
+
     subject = models.CharField(max_length=255)
     body = models.TextField(max_length=255)
     send_time = models.TimeField(verbose_name='Send time', )
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, default='daily')
-    status = models.CharField(choices=FIRST_CHOICES, verbose_name='Status',
-                              default='3')
+    status = models.CharField(choices=FIRST_CHOICES, verbose_name='Status',default='3')
+    additional_status = models.CharField(max_length=20, choices=ADDITIONAL_STATUS_CHOICES, default='pending')
     client = models.ManyToManyField(Client, verbose_name='Clients')
 
     def __str__(self):
         return f"{self.body}"
 
-    # def get_next_time_run(self) -> datetime:
-    #     """Return next time run"""
-    #     now = timezone.now()
-    #     if self.send_time >= now.time():
-    #         # Если время отправки больше или равно текущему времени сейчас, отправляем сегодня
-    #         next_datetime = now.today()
-    #     else:
-    #         # Иначе отправляем завтра
-    #         next_datetime = now.today() + timedelta(days=1)
-    #
-    #         # Далее добавляем интервал в зависимости от выбранной периодичности
-    #         if self.frequency == 'daily':
-    #             pass  # Оставляем без изменений, так как уже учтено в вычислениях выше
-    #         elif self.frequency == 'weekly':
-    #             next_datetime += timedelta(weeks=1)
-    #         elif self.frequency == 'monthly':
-    #             next_datetime += timedelta(days=30)  # Простое добавление дней
-    #
-    #         # Объединяем полученное дату и время отправки, чтобы получить полное время отправки
-    #         next_time_run = datetime.combine(next_datetime, self.send_time)
-    #
 
     class Meta:
         verbose_name = 'Рассылка'

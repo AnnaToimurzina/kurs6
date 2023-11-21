@@ -1,0 +1,17 @@
+
+
+Проект использует Celery для выполнения асинхронных задач. Celery использует брокер сообщений для обмена сообщениями между приложениями Django и Celery. Redis - это один из популярных брокеров для Celery.
+
+Установите Redis: arch -arm64 brew install redis
+Запустите Redis: brew services start redis
+
+Celery Beat отвечает за планирование и регулярное выполнение задач по расписанию. Он нужен, если у вас есть задачи, которые должны выполняться периодически.
+Запустите Celery Beat: celery -A config beat -l info
+
+Celery Worker обрабатывает фактические задачи, отправленные из вашего приложения Django.
+Запустите Celery Worker: celery -A config worker -l info
+Теперь Celery Worker готов к обработке задач.
+
+Запуск вашего кода:
+После того как Redis, Celery Beat и Celery Worker запущены, вы можете запустить ваш код, который отправляет задачи в Celery.
+python manage.py runserver

@@ -12,8 +12,7 @@ from celery import Task
 
 from rassilki.models import MailingMessage, Log
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-django.setup()
+
 
 
 class MailingTask(Task):
@@ -21,20 +20,23 @@ class MailingTask(Task):
     max_retries = 3
     ignore_result = True
 
-
+@app.task(base=MailingTask)
 def send_mails() -> None:
     """Send email to clients"""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    django.setup()
     logging.info('функция стартовала')
-    now = timezone.now()
 
+    now = timezone.now()
     ready_to_mail_list = MailingMessage.objects.filter(send_time__lte=now)
     count = len(ready_to_mail_list)
 
     if count > 0:
         print(f"Есть {count} объектов для отправки.")
-
     else:
         print("Нет объектов для отправки.")
+
+
 
     # Получить все объекты MailingMessage
     all_mailings = MailingMessage.objects.all()

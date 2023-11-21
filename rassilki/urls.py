@@ -9,7 +9,7 @@ app_name = RassilkiConfig.name
 
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
-    path('', index, name='index'),
+    path('index/', index, name='index'),
     path('client_form/', ClientCreateView.as_view(), name='client-create'),
     path('client/', ClientListView.as_view(), name='client-list'),
     path('client/<int:pk>/detail/', ClientDetailView.as_view(), name='client-detail'),

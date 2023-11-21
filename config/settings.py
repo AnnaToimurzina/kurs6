@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rassilki',
-    'users',
     # 'django_crontab',
 
 ]
@@ -152,4 +151,4 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CRONJOBS = [
     ('*/5 * * * *', 'rassilki.utils.send_mailing')]
 
-AUTH_USER_MODEL = 'users.User'
+'''AUTH_USER_MODEL = 'users.User'''''
